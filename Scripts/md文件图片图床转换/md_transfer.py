@@ -11,7 +11,7 @@ python 脚本地址 文件地址 [是否需要压缩]
 eg：
 
 python ~/Dropbox/useful_script/Scripts/md文件图片图床转换/md_transfer.py ~/Desktop/t.md 0
-
+Windows中本地路径是用反斜杠
 0 - 不需要图片压缩
 1 - 需要图片压缩
 
@@ -109,7 +109,7 @@ def md_img_find(md_file):
     将给定的markdown文件里的图片本地路径转换成网上路径
     '''
     post = None  # 用来存放markdown文件内容
-    with open(md_file, 'r') as f:
+    with open(md_file, 'r',encoding='utf-8') as f: # 使用utf-8 编码打开
         post = f.read()
         matches = re.compile('!\\[.*?\\]\\((.*?)\\)|<img.*?src=[\'\"](.*?)[\'\"].*?>').findall(post)     # 匹配md文件中的图片
         if matches and len(matches) > 0:
@@ -120,7 +120,7 @@ def md_img_find(md_file):
                         if not re.match('((http(s?))|(ftp))://.*', match):  # 判断是不是已经是一个图片的网址
                             loc_p = match
                             if not os.path.exists(loc_p) or not os.path.isfile(loc_p):  # 如果文件不存在，则可能这是用的一个相对路径，需要转成绝对路径
-                                loc_p = md_file[:md_file.rfind('/')+1] + match
+                                loc_p = md_file[:md_file.rfind('/')+1] + match           # Windows中 md_file的本地路径为反斜杠\\, match的相对路径为 "MD标题\图片文件名"
                             if os.path.exists(loc_p) and os.path.isfile(loc_p):
                                 if imghdr.what(loc_p):  # 如果是一个图片的话，才要上传，否则的话，不用管
                                     if need_zip:
@@ -143,7 +143,7 @@ def md_img_find(md_file):
                                     continue
                             else: print('#warning: 文件不存在 ：', loc_p)
                         else: print('markdown文件中的图片用的是网址 ：', match)
-            if post: open(md_file, 'w').write(post) #如果有内容的话，就直接覆盖写入当前的markdown文件
+            if post: open(md_file, 'w',encoding='utf-8').write(post) #如果有内容的话，就直接覆盖写入当前的markdown文件  仍然注意用uft-8编码打开
 
 def find_md(folder):
     '''
@@ -165,4 +165,7 @@ if __name__ == '__main__':
             need_zip = sys.argv[2] == '1'
         c_p = sys.argv[0]
         md_loc = c_p[:c_p.rfind('/') + 1]
+        bak_md = '%s.bak' % (sys.argv[1])
+        shutil.copyfile(sys.argv[1], bak_md)  #在执行改动之前备份原MD文件
+        print('origin markdown file backup in: %s' % (bak_md))
         find_md(sys.argv[1])
