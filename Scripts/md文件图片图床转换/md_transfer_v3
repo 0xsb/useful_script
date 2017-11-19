@@ -69,8 +69,8 @@ def upload_file(upload_file_name):
     global success , ignore , failure
     #rstr = str(time.time())+''.join(random.sample('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', 12))
     #key = md5(rstr.encode('utf-8')).hexdigest()   # 上传到七牛后的图片名
-    key = yyyymmdd+"_"+os.path.splitext(os.path.basename(sys.argv[1]) )[0]+"/"+('{0}'.format(success+1))+os.path.splitext(upload_file_name)[1]
-    # 上传到七牛后的图片名:上传日期-MD文件名/序号.png or jpg
+    key = yyyymmdd+"_"+os.path.splitext(os.path.basename(sys.argv[1]) )[0]+"/image"+('{0}'.format(success+1))+os.path.splitext(upload_file_name)[1]
+    # 上传到七牛后的图片名:上传日期-MD文件名/image序号.png or jpg
     mime_type = upload_file_name[upload_file_name.rfind('.') + 1:]
     token = q.upload_token(bucket, key)
     ret, info = put_file(token, key, upload_file_name, mime_type=mime_type, check_crc=True)
@@ -102,8 +102,8 @@ def transfer_online_img(old_link):
         old_link = old_link[: old_link.index('?')]
 
     #key = yyyymmdd + "-" +''.join(random.sample('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', 6))
-    key = yyyymmdd+"_"+os.path.splitext(os.path.basename(sys.argv[1]) )[0]+"/"+('{0}'.format(success+1))
-    # 上传到七牛后的图片名:上传日期-MD文件名/序号
+    key = yyyymmdd+"_"+os.path.splitext(os.path.basename(sys.argv[1]) )[0]+"/image"+('{0}'.format(success+1))
+    # 上传到七牛后的图片名:上传日期-MD文件名/image序号
     ret, info = Bucket_Manager.fetch(old_link, bucket, key)
     if ret['key'] == key :
         success = success + 1
